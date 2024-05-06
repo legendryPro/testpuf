@@ -1,19 +1,27 @@
-# Use an official Ubuntu runtime as a parent image
+# Use a suitable base image (e.g., Ubuntu)
 FROM ubuntu:latest
 
-# Set the working directory to /app
-WORKDIR /app
+# Install required packages (adjust as needed)
+RUN apt-get update && apt-get install -y \
+    wget \
+    openjdk-8-jre \
+    unzip
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# Download and install PufferPanel
+RUN wget -O /tmp/pufferpanel.zip https://pufferpanel.com/pufferpanel-latest.zip && \
+    unzip /tmp/pufferpanel.zip -d /srv/pufferpanel
 
-# Install required tools
-RUN apt-get update -y && \
-    apt-get install -y wget curl && \
-    curl -fsSL https://code-server.dev/install.sh | sh
+# Copy script to add user
+COPY add_user.sh /srv/pufferpanel/add_user.sh
 
-# Set environment variable for the port
-ENV PORT=10000
+# Expose port 8080
+EXPOSE 8080
 
-# Start VSCode
-CMD code-server --port $PORT --disable-telemetry --auth none
+# Define environment variables (e.g., admin user credentials)
+ENV ADMIN_EMAIL="manitnv840@gmail.com" \
+    ADMIN_USERNAME="Legend" \
+    ADMIN_PASSWORD="SUNsun7878@7878"
+
+# Set up and run PufferPanel
+WORKDIR /srv/pufferpanel
+CMD ["./pufferpanel", "--no-update"]
