@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     openjdk-8-jre \
     unzip
-    sudo apt install default-jdk
+    apt install default-jdk
 
 # Download and install PufferPanel
 RUN  mkdir -p /var/lib/pufferpanel
