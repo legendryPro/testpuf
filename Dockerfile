@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 # Install PufferPanel
 RUN curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | sudo bash && \
-    apt-get install -y pufferpanel
+    apt-get install -y pufferpanel \
 
 # Enable PufferPanel service
 RUN systemctl enable pufferpanel
