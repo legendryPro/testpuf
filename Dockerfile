@@ -1,28 +1,25 @@
-# Use a suitable base image (e.g., Ubuntu)
+# Use a base image, for example, Ubuntu
 FROM ubuntu:latest
 
-# Install required packages (adjust as needed)
-RUN apt-get update && apt-get install -y \
-    wget \
-    openjdk-8-jre \
-    unzip
-    
+# Set a working directory inside the container
+WORKDIR /app
 
-# Download and install PufferPanel
-RUN  mkdir -p /var/lib/pufferpanel
-     docker volume create pufferpanel-config
-     docker create --name pufferpanel -p 8080:8080 -p 5657:5657 -v pufferpanel-config:/etc/pufferpanel -v /var/lib/pufferpanel:/var/lib/pufferpanel -v /var/run/docker.sock:/var/run/docker.sock --restart=on-failure pufferpanel/pufferpanel:latest
-     docker exec -it pufferpanel /pufferpanel/pufferpanel user add
-    
+# Install curl and other utilities
+RUN apt-get update && \
+    apt-get install -y curl gnupg
 
-# Expose port 8080
+# Install PufferPanel
+RUN curl -s https://packagecloud.io/install/repositories/pufferpanel/pufferpanel/script.deb.sh | sudo bash && \
+    apt-get install -y pufferpanel
+
+# Enable PufferPanel service
+RUN systemctl enable pufferpanel
+
+# Add a user to PufferPanel
+RUN pufferpanel user add --email foxytoux@gmail.com --name foxytoux --password Fox21200 --admin
+
+# Expose port 8080 (if your application needs it)
 EXPOSE 8080
 
-# Define environment variables (e.g., admin user credentials)
-ENV ADMIN_EMAIL="manitnv840@gmail.com" \
-    ADMIN_USERNAME="Legend" \
-    ADMIN_PASSWORD="SUNsun7878@7878"
-
-# Set up and run PufferPanel
-WORKDIR  /var/lib/pufferpanel
-CMD docker start pufferpanel
+# Specify the command to run your application or PufferPanel
+CMD ["pufferpanel", "start"]
